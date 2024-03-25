@@ -132,7 +132,7 @@ def coffate_fn(examples):
 batch_size = 8
 num_epoch = 5  # 训练轮次
 check_step = 1  # 用以训练中途对模型进行检验：每check_step个epoch进行一次测试和保存模型
-data_path = "D:\\YCJH\\Project\\0_2024.03.21\\sst2_shuffled.tsv"  # 数据所在地址
+data_path = "D:\\YCJH\\Project\\0_2024.03.21-24\\sst2_shuffled.tsv"  # 数据所在地址
 train_ratio = 0.8  # 训练集比例
 learning_rate = 1e-5  # 优化器的学习率
 
@@ -170,7 +170,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # 加载预训练模型，因为这里是英文数据集，需要用在英文上的预训练模型：bert-base-uncased
 # uncased指该预训练模型对应的词表不区分字母的大小写
 # 详情可了解：https://huggingface.co/bert-base-uncased
-pretrained_model_name = 'D:\\YCJH\\Project\\0_2024.03.21\\bert-base-uncased'
+pretrained_model_name = 'D:\\YCJH\\Project\\0_2024.03.21-24\\bert-base-uncased'
 # 创建模型 BertSST2Model
 model = BertSST2Model(len(categories), pretrained_model_name)
 # 固定写法，将模型加载到device上，
