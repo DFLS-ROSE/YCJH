@@ -129,7 +129,7 @@ def coffate_fn(examples):
 
 # 训练准备阶段，设置超参数和全局变量
 
-batch_size = 8
+batch_size = 8 # 每个轮次的数据量
 num_epoch = 5  # 训练轮次
 check_step = 1  # 用以训练中途对模型进行检验：每check_step个epoch进行一次测试和保存模型
 data_path = "D:\\YCJH\\Project\\0_2024.03.21-24\\sst2_shuffled.tsv"  # 数据所在地址
