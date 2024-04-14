@@ -57,9 +57,9 @@ class BertSST2Model(nn.Module):
         #   last_hidden_state:最后一个隐层的值
         #   pooler output:对应的是[CLS]的输出,用于分类任务
         # 通过线性层将维度：768->2
-        # categories_numberic：tensor类型，shape=batch_size*class_size，用于后续的CrossEntropy计算
-        categories_numberic = self.classifier(output.pooler_output)
-        return categories_numberic
+        # categories_numeric：tensor类型，shape=batch_size*class_size，用于后续的CrossEntropy计算
+        categories_numeric = self.classifier(output.pooler_output)
+        return categories_numeric
 
 
 def save_pretrained(model, path):
@@ -129,10 +129,10 @@ def coffate_fn(examples):
 
 # 训练准备阶段，设置超参数和全局变量
 
-batch_size = 8 # 每个轮次的数据量
+batch_size = 32
 num_epoch = 5  # 训练轮次
 check_step = 1  # 用以训练中途对模型进行检验：每check_step个epoch进行一次测试和保存模型
-data_path = "D:\\YCJH\\Project\\0_2024.03.21-24\\sst2_shuffled.tsv"  # 数据所在地址
+data_path = "./sst2_shuffled.tsv"  # 数据所在地址
 train_ratio = 0.8  # 训练集比例
 learning_rate = 1e-5  # 优化器的学习率
 
@@ -163,14 +163,14 @@ test_dataloader = DataLoader(test_dataset,
                              batch_size=1,
                              collate_fn=coffate_fn)
 
-#固定写法，可以牢记，cuda代表Gpu
+# 固定写法，可以牢记，cuda代表Gpu
 # torch.cuda.is_available()可以查看当前Gpu是否可用
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # 加载预训练模型，因为这里是英文数据集，需要用在英文上的预训练模型：bert-base-uncased
 # uncased指该预训练模型对应的词表不区分字母的大小写
 # 详情可了解：https://huggingface.co/bert-base-uncased
-pretrained_model_name = 'D:\\YCJH\\Project\\0_2024.03.21-24\\bert-base-uncased'
+pretrained_model_name = 'bert-base-uncased'
 # 创建模型 BertSST2Model
 model = BertSST2Model(len(categories), pretrained_model_name)
 # 固定写法，将模型加载到device上，
@@ -181,7 +181,7 @@ tokenizer = BertTokenizer.from_pretrained(pretrained_model_name)
 
 # 训练过程
 # Adam是最近较为常用的优化器，详情可查看：https://www.jianshu.com/p/aebcaf8af76e
-optimizer = Adam(model.parameters(), learning_rate)  #使用Adam优化器
+optimizer = Adam(model.parameters(), learning_rate)  # 使用Adam优化器
 CE_loss = nn.CrossEntropyLoss()  # 使用crossentropy作为二分类任务的损失函数
 
 # 记录当前训练时间，用以记录日志和存储
@@ -220,7 +220,7 @@ for epoch in range(1, num_epoch + 1):
         # 统计总的损失，.item()方法用于取出tensor中的值
         total_loss += loss.item()
 
-    #测试过程
+    # 测试过程
     # acc统计模型在测试数据上分类结果中的正确个数
     acc = 0
     for batch in tqdm(test_dataloader, desc=f"Testing"):
@@ -241,7 +241,7 @@ for epoch in range(1, num_epoch + 1):
             则 bert_output.argmax(dim=1) 的结果为：tensor[0,1,1]
             """
             acc += (bert_output.argmax(dim=1) == targets).sum().item()
-    #输出在测试集上的准确率
+    # 输出在测试集上的准确率
     print(f"Acc: {acc / len(test_dataloader):.2f}")
 
     if epoch % check_step == 0:
