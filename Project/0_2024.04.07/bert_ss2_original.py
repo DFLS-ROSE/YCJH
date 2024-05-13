@@ -169,12 +169,16 @@ for epoch_index in range(1, num_epochs+1):
     # 测试
     acc = 0
 
+    predictions = []
+    labels = []
+
     acc_debug = 0
     index = 1
     debug_bert_output = None
     debug_target = None
-    for test_batch_index in test_dataloader:
-    # for test_batch_index in tqdm(test_dataloader, desc=f"Testing"):
+    # for test_batch_index in test_dataloader:
+    for test_batch_index in tqdm(test_dataloader, desc=f"Testing"):
+        # acc = 0
         inputs, targets = [x.to(device) for x in test_batch_index]
         # 输出预测张量
         bert_output = model(inputs)
@@ -183,19 +187,23 @@ for epoch_index in range(1, num_epochs+1):
         # 累加结果
         acc += (bert_output.argmax(dim=1) == targets).sum().item()
         # .argmax(): 返回张量中最大值的位置, dim=1表示从第1维(行)开始索引
-        
+
         # debug:
-        acc_debug = accuracy_score(targets.cpu().numpy(), bert_output.argmax(dim=1).cpu().numpy())
-        print(f"\n\n-------------------------DEBUG-INFO {index}-------------------------")
-        print(f"len(test_dataloader): {len(test_dataloader)}")
-        print(f"Acc: {acc/len(test_dataloader):.2f}")
-        print(f"Acc_from_sklearn: {acc_debug:.2f}")
-        print(f"Debug_bert_output: {debug_bert_output}")
-        print(f"Debug_target: {debug_target}")
-        print("-------------------------DEBUG-INFO END-------------------------\n\n")
-        index += 1
+        predictions.extend(bert_output.argmax(dim=1).cpu().numpy())
+        labels.extend(targets.cpu().numpy())
+        # acc_debug = accuracy_score(targets.cpu().numpy(), bert_output.argmax(dim=1).cpu().numpy())
+        # print(f"\n\n-------------------------DEBUG-INFO {index}-------------------------")
+        # print(f"len(bert_output): {len(bert_output)}")
+        # print(f"origin_acc: {acc}")
+        # print(f"Acc: {acc/len(bert_output):.2f}")
+        # print(f"Acc_from_sklearn: {acc_debug:.2f}")
+        # print(f"Debug_bert_output: {debug_bert_output}")
+        # print(f"Debug_target: {debug_target}")
+        # print("-------------------------DEBUG-INFO END-------------------------\n\n")
+        # index += 1
     
-    print(f"acc: {acc/len(test_dataloader):.2f}")
+    # print(f"acc: {acc/len(test_dataloader.dataset):.2f}")
+    print(f"acc_from_sklearn: {accuracy_score(labels, predictions):.2f}")
 
     if epoch_index % check_step == 0:
         # 保存模型
