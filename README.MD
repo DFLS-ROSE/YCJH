@@ -18,6 +18,7 @@ pip install torch==1.10.0 transformers==4.1.1 pandas matplotlib
 pip install torch-scatter pytorch-geometric spacy gensim
 
 ## 项目结构
+```
 YCJH/
 ├── Project/
 │   ├── 2_2024.07.29-08.04/SentKB-main  # 知识增强模型
@@ -28,6 +29,7 @@ YCJH/
 └── data/
     ├── VAST/                           # 基准数据集
     └── ConceptNet/                      # 常识知识图谱
+```
 
 ## 核心方法
 
